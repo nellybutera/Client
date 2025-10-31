@@ -7,12 +7,19 @@ export class SavingsController {
 
   @Post('deposit')
   deposit(@Body() body: { userId: number; amount: number }) {
-    return this.service.deposit(body.userId, body.amount);
+    
+    const userId = Number(body.userId);
+    const amount = Number(body.amount);
+
+    return this.service.deposit(userId, amount);
   }
 
   @Post('withdraw')
   withdraw(@Body() body: { userId: number; amount: number }) {
-    return this.service.withdraw(body.userId, body.amount);
+    const userId = Number(body.userId);
+    const amount = Number(body.amount);
+
+    return this.service.withdraw(userId, amount);
   }
 
   @Get('balance/:id')
