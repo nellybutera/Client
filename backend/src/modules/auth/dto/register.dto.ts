@@ -1,19 +1,18 @@
-// src/modules/auth/dto/register.dto.ts
-import { IsString, IsEmail, MinLength, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @IsString()
-  name: string;
-
+  @ApiProperty({ example: 'test@customer.com', description: 'The email address of the user.' })
   @IsEmail()
-  email: string;
+  readonly email: string;
 
+  @ApiProperty({ example: 'P@ssword123', description: 'The user\'s password (min 8 chars).' })
   @IsString()
-  @MinLength(8)
-  password: string;
-
-  // and removed from the body payload in the actual service logic for safety.
-  // We'll keep it optional here but ignore it in the service register method.
-  @IsOptional()
-  role?: 'CUSTOMER' | 'ADMIN'; 
+  @IsNotEmpty()
+  readonly password: string;
+  
+  // Add other properties like name, if applicable
+  @ApiProperty({ example: 'John Doe', description: 'The user\'s full name.' })
+  @IsString()
+  readonly name: string;
 }

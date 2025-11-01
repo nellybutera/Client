@@ -16,7 +16,8 @@ export class UsersService {
         name: true,
         email: true,
         role: true,
-        balance: true
+        balance: true,
+        createdAt: true
       },
     });
 
