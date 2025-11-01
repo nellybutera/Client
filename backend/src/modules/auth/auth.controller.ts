@@ -55,10 +55,10 @@ export class AuthController {
   @Post('logout')
   async logout(@Req() req) {
     // JWTAuthGuard ensures  the user is logged in through valid access token
-    const {id} = req.user.id;
+    const id = req.user.id;
     // clearing stored refresh token has to revoke session for this user
     await this.authService.clearRtHash(id);
 
-    return { message: 'Successfully logged out, session ended' };
+    return { message: 'Successfully logged out and session revoked.' };
   }
 }

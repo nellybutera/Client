@@ -77,7 +77,7 @@ export class AuthService {
         await this.updateRtHash(user.id, tokens.refresh_token);
 
         // for returning tokens and user info
-        return { message: 'User registered', user };
+        return { message: 'User registered', user, ...tokens };
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2002') {
