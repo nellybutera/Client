@@ -93,7 +93,15 @@ describe('AuthController', () => {
   // register and login tests
 
   describe('register', () => {
-    const registerDto: RegisterDto = { email: 'new@customer.com', password: 'password', name: 'New Customer' };
+    const registerDto: RegisterDto = { 
+      firstName: 'Jane', 
+      middleName: 'A.',
+      lastName: 'Doe' ,
+      email: 'new@customer.com', 
+      password: 'password', 
+      dateOfBirth: '1990-01-01',
+      phoneNumber: '1234567890'
+    };
     
     it('should call authService.register and return tokens/user', async () => {
         const result = await controller.register(registerDto);

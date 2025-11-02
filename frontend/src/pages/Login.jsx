@@ -1,17 +1,31 @@
+// src/components/Login.jsx
+
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom"; // 💡 Import Link
 import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      login({ name: "Nelly Butera", email });
+    setError(null);
+    setLoading(true);
+
+    if (form.email && form.password) {
+      try {
+        await login(form);
+      } catch (err) {
+        setError(err.message || "Login failed. Check email or password.");
+      } finally {
+        setLoading(false);
+      }
     } else {
-      alert("Please enter all fields!");
+      setError("Please enter all fields!");
+      setLoading(false);
     }
   };
 
@@ -24,28 +38,38 @@ export default function Login() {
         <h1 className="text-xl sm:text-2xl font-semibold mb-6 text-center">
           User Login
         </h1>
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+
         <input
           type="email"
           placeholder="Email"
           className="w-full mb-4 p-2 border rounded text-sm sm:text-base"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
         />
         <input
           type="password"
           placeholder="Password"
           className="w-full mb-6 p-2 border rounded text-sm sm:text-base"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
         <button
           type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded transition"
+          className={`bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
+        
+        <p className="text-center mt-4 text-sm">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-indigo-600 underline hover:text-indigo-800 transition">
+            Register here
+          </Link>
+        </p>
       </form>
     </div>
   );

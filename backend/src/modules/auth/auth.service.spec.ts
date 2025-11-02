@@ -59,10 +59,15 @@ const mockUser = {
   email: 'test@customer.com',
   password: MOCK_HASHED_PASSWORD,
   role: 'CUSTOMER',
-  name: 'Test Customer',
+  firstName: 'Test Customer',
+  middleName: 'T.',
+  lastName: 'User',
+  dateOfBirth: new Date('1990-01-01'),
+  phoneNumber: '1234567890',
   refreshTokenHash: null,
   createdAt: new Date(),
   balance: 0,
+  creditScore: 700
 };
 
 describe('AuthService', () => {
@@ -141,11 +146,23 @@ describe('AuthService', () => {
   // register tests
   describe('register', () => {
     const registerDto: RegisterDto = { 
+      firstName: 'Jane', 
+      middleName: 'A.',
+      lastName: 'Doe' ,
       email: 'new@customer.com', 
-      password: MOCK_PASSWORD, 
-      name: 'New Customer' 
+      password: 'password', 
+      dateOfBirth: '1990-01-01',
+      phoneNumber: '1234567890'
     };
-    const registeredUser = { ...mockUser, email: registerDto.email, name: registerDto.name };
+    const registeredUser = { 
+      ...mockUser, 
+      email: registerDto.email, 
+      firstName: registerDto.firstName
+    , middleName: registerDto.middleName
+    , lastName: registerDto.lastName
+    , dateOfBirth: new Date(registerDto.dateOfBirth)
+    , phoneNumber: registerDto.phoneNumber
+    };
 
     beforeEach(() => {
         // setting up mocks for successful token generation and hash storage during register
