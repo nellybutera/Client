@@ -18,27 +18,75 @@ datasource db {
 
 
 enum Role {
-  ADMIN
   CUSTOMER
+  ADMIN
 }
 
+// user model
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(CUSTOMER)
-  balance   Float     @default(0)
-  refreshTokenHash  String?
-  credits   Credit[]
-  createdAt DateTime  @default(now())
+  id                Int       @id @default(autoincrement())
+  accountNumber     String    @unique // Unique identifier for banking/transactions
+  firstName         String
+  middleName        String?   // Optional field for middle name
+  lastName          String
+  dateOfBirth       DateTime  // Required for KYC/compliance (DOB)
+  phoneNumber       String?   @unique // For MFA and contact
+  
+  // authentication & Status Fields
+  email             String    @unique
+  password          String    // Hashed password
+  role              Role      @default(CUSTOMER) // Uses the Role Enum
+  refreshTokenHash  String?   // For persistent sessions
+  
+  // financial/Credit Status Fields
+  balance           Float     @default(0)
+  creditScore       Int       @default(700) // Initialized for risk assessment
+
+  // Audit and Relationship Fields
+  createdAt         DateTime  @default(now())
+  
+  // Add relationships to other models here (e.g., Transactions, Loans)
+  transactions      Transaction[]
+  loans             Loan[]
 }
 
-model Credit {
-  id        Int      @id @default(autoincrement())
-  amount    Float
-  status    String   @default("PENDING")
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+// financial models
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  LOAN_DISBURSEMENT
+  LOAN_REPAYMENT
+}
+
+model Transaction {
+  id                Int               @id @default(autoincrement())
+  userId            Int
+  amount            Float
+  type              TransactionType   // e.g., DEPOSIT, WITHDRAWAL
+  description       String?           // Purpose of the transaction
+  externalRefId     String?           // For tracing external bank/payment IDs
+  createdAt         DateTime          @default(now())
+  
+  user              User              @relation(fields: [userId], references: [id])
+}
+
+// loan model for credit operations:
+enum LoanStatus {
+  PENDING     // Request submitted, awaiting review
+  APPROVED    // Loan accepted, funds ready for disbursement
+  REJECTED    // Loan denied
+  ACTIVE      // Loan funds disbursed, payments due
+  PAID_OFF    // Loan fully repaid
+}
+
+model Loan {
+  id                Int           @id @default(autoincrement())
+  userId            Int
+  amountRequested   Float
+  termMonths        Int           // Duration of the loan
+  purpose           String        // Why the loan is needed
+  status            LoanStatus    @default(PENDING)
+  createdAt         DateTime      @default(now())
+  user              User          @relation(fields: [userId], references: [id])
 }
